@@ -21,7 +21,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // AI Chat එකට ඕනෑම කෙනෙකුට අවසර දෙනවා (Public)
                         .requestMatchers("/api/ai/**").permitAll()
-
+                        .requestMatchers("/api/user/register").permitAll()
                         // ඉතිරි ඕනෑම request එකකට Login වෙලා ඉන්න ඕනේ
                         .anyRequest().authenticated()
                 );
