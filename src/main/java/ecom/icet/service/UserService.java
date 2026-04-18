@@ -4,4 +4,6 @@ import ecom.icet.model.dto.UserDto;
 
 public interface UserService {
     void registerUser(UserDto userDto);
+
+    String getAiAdviceForUser(String email);
 }
