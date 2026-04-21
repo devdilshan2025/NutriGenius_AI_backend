@@ -13,4 +13,4 @@ spring:
 ai:
   google:
     gemini:
-      api-key: "AIzaSyCZJIZM9mnMUAgyt7irbk16XBXi03j8rJ8"
+      api-key: ""
