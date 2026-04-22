@@ -1,12 +1,10 @@
 package ecom.icet.service.impl;
 
-import ecom.icet.model.dto.UserDto;
 import ecom.icet.model.entity.User;
 import ecom.icet.repository.UserRepository;
 import ecom.icet.service.AiCoachService;
 import ecom.icet.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -16,30 +14,25 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final ModelMapper modelMapper;
     private final AiCoachService aiCoachService;
 
-    @Override
-    public void registerUser(UserDto userDto) {
-        // DTO එක Entity එකකට හරවනවා
-        User user = modelMapper.map(userDto, User.class);
-        // Database එකේ සේව් කරනවා
-        userRepository.save(user);
-    }
+    // මචං, registerUser සහ loginUser මෙතනින් අයින් කළා.
+    // මොකද ඒවා දැන් AuthServiceImpl එකේ තියෙන්නේ.
 
     @Override
     public String getAiAdviceForUser(String email) {
-        // 1. Repository එකෙන් එන්නේ Optional එකක්
+        // 1. Database එකෙන් Userව හොයාගන්නවා
         Optional<User> userOptional = userRepository.findByEmail(email);
 
-        // 2. යූසර් කෙනෙක් ඉන්නවද කියලා චෙක් කරනවා
         if (userOptional.isPresent()) {
-            User user = userOptional.get(); // ඇතුළේ ඉන්න User object එක ගන්නවා
+            User user = userOptional.get();
 
+            // 2. AI එකට යවන Prompt එක හදනවා
             String prompt = "I am a health coach. My client is " + user.getName() +
                     ". Weight: " + user.getWeight() + "kg, Height: " + user.getHeight() + "cm. " +
-                    "Give a short health tip based on this data.";
+                    "Give a short, professional health tip based on this data.";
 
+            // 3. AI Service එකට කතා කරලා advice එක ගන්නවා
             return aiCoachService.getAiAdvice(prompt);
         }
 
