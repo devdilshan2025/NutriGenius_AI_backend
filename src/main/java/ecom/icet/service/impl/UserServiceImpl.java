@@ -1,13 +1,12 @@
 package ecom.icet.service.impl;
 
+import ecom.icet.model.dto.UserDto;
 import ecom.icet.model.entity.User;
 import ecom.icet.repository.UserRepository;
-import ecom.icet.service.AiCoachService;
 import ecom.icet.service.UserService;
+import ecom.icet.service.AiCoachService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,26 +15,35 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final AiCoachService aiCoachService;
 
-    // මචං, registerUser සහ loginUser මෙතනින් අයින් කළා.
-    // මොකද ඒවා දැන් AuthServiceImpl එකේ තියෙන්නේ.
+    @Override
+    public UserDto getUserByEmail(String email) {
+        // මෙතන ඔයා හරි: .orElse(null) පාවිච්චි කරලා තියෙනවා
+        User user = userRepository.findByEmail(email).orElse(null);
+
+        if (user == null) return null;
+
+        UserDto dto = new UserDto();
+        dto.setName(user.getName());
+        dto.setWeight(user.getWeight());
+        dto.setHeight(user.getHeight());
+        dto.setAge(user.getAge());
+
+        return dto;
+    }
 
     @Override
     public String getAiAdviceForUser(String email) {
-        // 1. Database එකෙන් Userව හොයාගන්නවා
-        Optional<User> userOptional = userRepository.findByEmail(email);
+        // මෙන්න මෙතනටයි .orElse(null) එක ඕන වුණේ!
+        User user = userRepository.findByEmail(email).orElse(null);
 
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
+        if (user == null) return "User not found!";
 
-            // 2. AI එකට යවන Prompt එක හදනවා
-            String prompt = "I am a health coach. My client is " + user.getName() +
-                    ". Weight: " + user.getWeight() + "kg, Height: " + user.getHeight() + "cm. " +
-                    "Give a short, professional health tip based on this data.";
+        // දැන් රතු ඉර මැකෙයි, මොකද 'user' දැන් Optional එකක් නෙවෙයි
+        String customPrompt = String.format(
+                "My weight is %s kg, height is %s cm and age is %d. Give me a brief health tip.",
+                user.getWeight(), user.getHeight(), user.getAge()
+        );
 
-            // 3. AI Service එකට කතා කරලා advice එක ගන්නවා
-            return aiCoachService.getAiAdvice(prompt);
-        }
-
-        return "User not found with email: " + email;
+        return aiCoachService.getAiAdvice(customPrompt);
     }
 }
