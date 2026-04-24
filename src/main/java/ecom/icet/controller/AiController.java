@@ -2,31 +2,33 @@ package ecom.icet.controller;
 
 import ecom.icet.service.AiCoachService;
 import ecom.icet.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/ai")
+@RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:4200")
 public class AiController {
 
     private final AiCoachService aiCoachService;
-    private final UserService userService; // 1. UserService එක මෙතනට එකතු කරන්න
+    private final UserService userService;
 
-    // 2. Constructor එකට UserService එකත් ඇතුළත් කරන්න
-    public AiController(AiCoachService aiCoachService, UserService userService) {
-        this.aiCoachService = aiCoachService;
-        this.userService = userService;
-    }
-
+    /**
+     * Chat Box එකේ ප්‍රශ්න වලට AI පිළිතුරු ලබාගැනීම
+     * GET: http://localhost:8080/api/ai/chat?message=hello
+     */
     @GetMapping("/chat")
     public String chat(@RequestParam String message) {
         return aiCoachService.getAiAdvice(message);
     }
 
-    // 3. Personalized Advice ලබාගන්නා අලුත් Endpoint එක
+    /**
+     * යූසර්ගේ සෞඛ්‍ය දත්ත මත පදනම්ව AI උපදෙස් ලබාගැනීම
+     * GET: http://localhost:8080/api/ai/personalized-advice?email=test@example.com
+     */
     @GetMapping("/personalized-advice")
     public String getPersonalizedAdvice(@RequestParam String email) {
-        // මේකෙන් වෙන්නේ UserService එක හරහා Database එකේ ඉන්න යූසර්ව හොයලා AI advice එක දෙන එක
         return userService.getAiAdviceForUser(email);
     }
 }
