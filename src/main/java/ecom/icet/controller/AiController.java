@@ -14,10 +14,9 @@ public class AiController {
     private final AiCoachService aiCoachService;
     private final UserService userService;
 
-    /**
-     * Chat Box එකේ ප්‍රශ්න වලට AI පිළිතුරු ලබාගැනීම
-     * GET: http://localhost:8080/api/ai/chat?message=hello
-     */
+
+
+
     @GetMapping("/chat")
     public String chat(@RequestParam String message) {
         return aiCoachService.getAiAdvice(message);
